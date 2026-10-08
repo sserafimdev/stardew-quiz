@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stardew Quiz - Horta da Capivara</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Press Start 2P', monospace;
+      image-rendering: pixelated;
+    }
+
+    body {
+      margin: 0;
+      padding: 12px;
+      background-image: linear-gradient(to bottom, #74a0f8 0%, #a0c0f8 40%, #70c060 40%, #48a038 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    .stardew-card {
+      background: #e2a868;
+      border: 4px solid #5c2c16;
+      box-shadow: inset 0 0 0 2px #f8d098, 0 4px 0 rgba(0,0,0,0.3);
+      padding: 8px 12px;
+      border-radius: 4px;
+      color: #381000;
+      text-align: center;
+    }
+
+    .top-hud {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 650px;
+      font-size: 8px;
+    }
+
+    .game-container {
+      width: 100%;
+      max-width: 650px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .box-panel {
+      width: 100%;
+      background: #f8d8a8;
+      border: 5px solid #6c3818;
+      box-shadow: inset 0 0 0 3px #f8e8c8, 0 6px 0 rgba(0,0,0,0.3);
+      padding: 16px;
+      text-align: left;
+      border-radius: 6px;
+    }
+
+    .farm-field-multi {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      height: 220px;
+      width: 100%;
+      position: relative;
+    }
+
+    .plot-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.05);
+    }
+
+    .water-meter-container {
+      width: 80px;
+      height: 12px;
+      background: #381000;
+      border: 2px solid #5c2c16;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .water-meter-bar {
+      height: 100%;
+      width: 0%;
+      background: #3b82f6;
+      transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .water-meter-text {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      font-size: 5px;
+      color: #ffffff;
+      text-shadow: 1px 1px 0 #000;
+      pointer-events: none;
+    }
+
+    .dirt-patch {
+      width: 110px;
+      height: 42px;
+      background: #804820;
+      border: 4px solid #482810;
+      box-shadow: inset 0 4px 0 #a06030;
+      border-radius: 50%;
+      transition: transform 0.1s, border-color 0.2s;
+    }
+
+    .dirt-patch:hover {
+      transform: scale(1.05);
+      border-color: #ffe600;
+    }
+
+    .plant {
+      font-size: 50px;
+      position: absolute;
+      bottom: 22px;
+      z-index: 2;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .plant.giant {
+      font-size: 80px;
+      bottom: 15px;
+      filter: drop-shadow(0 0 10px #ffe600);
+      animation: bounce 1s infinite alternate;
+    }
+
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-6px); }
+    }
+
+    .status-badge {
+      font-size: 6px;
+      background: #fff;
+      border: 1px solid #000;
+      padding: 2px 4px;
+      border-radius: 3px;
+      margin-bottom: 4px;
+      color: #381000;
+    }
+
+    .dialog-container {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      max-width: 650px;
+      margin-top: 8px;
+      align-items: center;
+    }
+
+    .capybara-avatar {
+      width: 75px;
+      height: 75px;
+      background: #e2a868;
+      border: 4px solid #5c2c16;
+      border-radius: 4px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog-box {
+      background: #f8d8a8;
+      border: 4px solid #6c3818;
+      padding: 10px;
+      flex-grow: 1;
+      font-size: 8px;
+      line-height: 1.5;
+      color: #401800;
+      height: 75px;
+      display: flex;
+      align-items: center;
+    }
+
+    .hotbar {
+      display: flex;
+      gap: 6px;
+      background: #482810;
+      padding: 6px;
+      border: 3px solid #a06030;
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+
+    .slot {
+      width: 60px;
+      height: 50px;
+      background: #e2a868;
+      border: 3px solid #5c2c16;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      border-radius: 4px;
+    }
+
+    .slot.active {
+      background: #ffe600;
+      border-color: #ffffff;
+      box-shadow: 0 0 8px #ffe600;
+    }
+
+    .slot-icon { font-size: 16px; }
+    .slot-cost { font-size: 6px; color: #fff; background: #381000; padding: 2px 4px; margin-top: 2px; border-radius: 2px; }
+
+    .btn-action {
+      background: #e2a868;
+      border: 3px solid #5c2c16;
+      padding: 10px;
+      font-size: 8px;
+      color: #381000;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+      line-height: 1.4;
+      border-radius: 4px;
+    }
+
+    .btn-action:hover { background: #f8d098; }
+
+    .seeds-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .seed-card {
+      background: #e2a868;
+      border: 3px solid #5c2c16;
+      padding: 8px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .seed-card:hover { background: #f8d098; }
+
+    .inventory-info {
+      font-size: 7px;
+      color: #381000;
+      margin-top: 8px;
+      background: #e2a868;
+      padding: 6px;
+      border: 2px solid #5c2c16;
+      border-radius: 4px;
+    }
+
+    .end-screen {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .end-title {
+      font-size: 12px;
+      color: #381000;
+      margin-bottom: 5px;
+    }
+    .end-desc {
+      font-size: 8px;
+      line-height: 1.6;
+      color: #5c2c16;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HUD Superior -->
+  <div class="top-hud">
+    <div class="stardew-card">📅 ETAPA: <span id="gameStage">QUIZ</span></div>
+    <div class="stardew-card">🪙 MOEDAS: <span id="coins">0</span></div>
+  </div>
+
+  <div class="game-container">
+    
+    <!-- TELA 1: QUIZ -->
+    <div id="quizScreen" class="box-panel">
+      <div id="questionTitle" style="font-size: 9px; color: #401800; margin-bottom: 12px; line-height:1.5;"></div>
+      <div id="optionsContainer" style="display:flex; flex-direction:column; gap:6px;"></div>
+    </div>
+
+    <!-- TELA 2: LOJA DE SEMENTES -->
+    <div id="shopScreen" class="box-panel" style="display:none;">
+      <div style="font-size: 8px; color: #381000; margin-bottom: 8px;">COMPRE SEMENTES PARA A SUA HORTA:</div>
+      <div class="seeds-grid" id="seedsGrid"></div>
+      
+      <div class="inventory-info" id="inventoryDisplay">Sementes compradas: 0</div>
+      
+      <button class="btn-action" onclick="goToFarm()" style="margin-top:10px;">IR PARA A HORTA ➔</button>
+    </div>
+
+    <!-- TELA 3: CULTIVO COM MEDIDOR DE ÁGUA -->
+    <div id="farmScreen" style="display:none; width: 100%;">
+      <div class="farm-field-multi">
+        
+        <!-- Canteiro 1 -->
+        <div class="plot-wrapper" onclick="interactPlot(0)">
+          <div class="status-badge" id="badge0">Vazio</div>
+          <div class="water-meter-container">
+            <div class="water-meter-bar" id="waterBar0"></div>
+            <div class="water-meter-text" id="waterText0">💧 0%</div>
+          </div>
+          <div class="plant" id="plant0"></div>
+          <div class="dirt-patch"></div>
+        </div>
+
+        <!-- Canteiro 2 -->
+        <div class="plot-wrapper" onclick="interactPlot(1)">
+          <div class="status-badge" id="badge1">Vazio</div>
+          <div class="water-meter-container">
+            <div class="water-meter-bar" id="waterBar1"></div>
+            <div class="water-meter-text" id="waterText1">💧 0%</div>
+          </div>
+          <div class="plant" id="plant1"></div>
+          <div class="dirt-patch"></div>
+        </div>
+
+        <!-- Canteiro 3 -->
+        <div class="plot-wrapper" onclick="interactPlot(2)">
+          <div class="status-badge" id="badge2">Vazio</div>
+          <div class="water-meter-container">
+            <div class="water-meter-bar" id="waterBar2"></div>
+            <div class="water-meter-text" id="waterText2">💧 0%</div>
+          </div>
+          <div class="plant" id="plant2"></div>
+          <div class="dirt-patch"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TELA 4: FIM DE JOGO -->
+    <div id="endScreen" class="box-panel end-screen" style="display:none;">
+      <div class="end-title">🎉 PARABÉNS! 🎉</div>
+      <div style="font-size: 35px;">🏆🌻🥕</div>
+      <div class="end-desc">
+        Você manteve a irrigação ideal com o medidor de água e fez suas plantas crescerem gigantes!<br><br>
+        Muito obrigado por jogar!
+      </div>
+      <div style="font-size: 8px; color: #381000; background: #e2a868; padding: 6px; border: 2px solid #5c2c16; border-radius: 4px;">
+        Moedas Restantes: <span id="finalCoins">0</span> 🪙
+      </div>
+      <button class="btn-action" onclick="restartGame()" style="margin-top: 10px;">🔄 JOGAR NOVAMENTE</button>
+    </div>
+
+  </div>
+
+  <!-- CAIXA DE DIÁLOGO COM A CAPIVARA -->
+  <div class="dialog-container" id="dialogContainer">
+    <div class="capybara-avatar">
+      <svg width="55" height="55" viewBox="0 0 40 40">
+        <rect x="6" y="14" width="26" height="20" fill="#8c5222"/>
+        <rect x="20" y="8" width="16" height="16" fill="#a6632b"/>
+        <rect x="30" y="12" width="8" height="5" fill="#381000"/>
+        <rect x="28" y="10" width="3" height="3" fill="#000"/>
+        <rect x="20" y="6" width="5" height="4" fill="#8c5222"/>
+        <rect x="8" y="32" width="5" height="5" fill="#5c2c16"/>
+        <rect x="24" y="32" width="5" height="5" fill="#5c2c16"/>
+      </svg>
+    </div>
+    <div class="dialog-box" id="dialogBox">
+      🦫 [Kapi]: Olá! Responda às perguntas para ganhar moedas para a sua horta!
+    </div>
+  </div>
+
+  <!-- BARRA DE FERRAMENTAS -->
+  <div class="hotbar" id="hotbar" style="display:none;">
+    <div class="slot" id="slot-seed" onclick="selectTool('seed')">
+      <span class="slot-icon">🌱</span>
+      <span class="slot-cost">Plantar</span>
+    </div>
+    <div class="slot" id="slot-water" onclick="selectTool('water')">
+      <span class="slot-icon">💧</span>
+      <span class="slot-cost">🪙 20</span>
+    </div>
+    <div class="slot" id="slot-fertilizer" onclick="selectTool('fertilizer')">
+      <span class="slot-icon">🪱</span>
+      <span class="slot-cost">🪙 40</span>
+    </div>
+    <div class="slot" id="slot-sun" onclick="selectTool('sun')">
+      <span class="slot-icon">☀️</span>
+      <span class="slot-cost">🪙 60</span>
+    </div>
+  </div>
+
+  <script>
+    let coins = 0;
+    let currentQuestion = 0;
+    let selectedTool = null;
+    let plantsFinishedCount = 0;
+    let waterDecayInterval = null;
+
+    // Estado individual de cada canteiro com medidor de água
+    let plots = [
+      { plant: null, stage: 0, water: 0 },
+      { plant: null, stage: 0, water: 0 },
+      { plant: null, stage: 0, water: 0 }
+    ];
+
+    const plantTypes = {
+      carrot: { name: "Cenoura", price: 50, seedIcon: "🥕", stages: ["🌱", "🌿", "🥕"] },
+      corn:   { name: "Milho",   price: 80, seedIcon: "🌽", stages: ["🌱", "🌿", "🌽"] },
+      flower: { name: "Girassol",price: 100,seedIcon: "🌻", stages: ["🌱", "🌿", "🌻"] },
+      tulip:  { name: "Tulipa",  price: 120,seedIcon: "🌷", stages: ["🌱", "🌿", "🌷"] }
+    };
+
+    let inventorySeeds = [];
+
+    const questions = [
+      { q: "1. O que as raízes das plantas absorvem do solo?", opts: ["Água e Nutrientes", "Luz Solar", "Vento"], ans: 0 },
+      { q: "2. O que é essencial para a planta fazer a fotossíntese?", opts: ["Escuridão", "Luz do Sol", "Gelo"], ans: 1 },
+      { q: "3. Por que usamos adubo orgânico na horta?", opts: ["Enriquece o solo", "Muda a cor das folhas", "Mata as minhocas"], ans: 0 },
+      { q: "4. Qual destes insetos ajuda a polinizar as flores?", opts: ["Abelha", "Pernilongo", "Mosca"], ans: 0 }
+    ];
+
+    function loadQuestion() {
+      if (currentQuestion < questions.length) {
+        const q = questions[currentQuestion];
+        document.getElementById('questionTitle').innerText = q.q;
+        const cont = document.getElementById('optionsContainer');
+        cont.innerHTML = '';
+        
+        q.opts.forEach((opt, i) => {
+          const btn = document.createElement('button');
+          btn.className = 'btn-action';
+          btn.innerText = opt;
+          btn.onclick = function() {
+            if (i === q.ans) {
+              coins += 200;
+              document.getElementById('coins').innerText = coins;
+              document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Resposta correta! Ganhou +200 Moedas! 🪙";
+            } else {
+              document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Quase lá! Vamos para a próxima.";
+            }
+            currentQuestion++;
+            setTimeout(loadQuestion, 1200);
+          };
+          cont.appendChild(btn);
+        });
+      } else {
+        openShop();
+      }
+    }
+
+    function openShop() {
+      document.getElementById('quizScreen').style.display = 'none';
+      document.getElementById('shopScreen').style.display = 'block';
+      document.getElementById('gameStage').innerText = 'LOJA';
+      
+      const grid = document.getElementById('seedsGrid');
+      grid.innerHTML = '';
+      for (let key in plantTypes) {
+        const p = plantTypes[key];
+        const card = document.createElement('div');
+        card.className = 'seed-card';
+        card.onclick = function() { buySeed(key); };
+        card.innerHTML = `<div style="font-size:20px;">${p.seedIcon}</div><div style="font-size:7px;">${p.name}</div><div style="font-size:7px; color:green;">🪙 ${p.price}</div>`;
+        grid.appendChild(card);
+      }
+      updateInventoryDisplay();
+      document.getElementById('dialogBox').innerText = `🦫 [Kapi]: Compre sementes e depois clique em "IR PARA A HORTA"!`;
+    }
+
+    function buySeed(key) {
+      const p = plantTypes[key];
+      if (coins < p.price) {
+        document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Você não tem moedas suficientes!";
+        return;
+      }
+      coins -= p.price;
+      document.getElementById('coins').innerText = coins;
+      inventorySeeds.push(p);
+      updateInventoryDisplay();
+      
+      document.getElementById('dialogBox').innerText = `🦫 [Kapi]: Comprou ${p.name}! Pode comprar mais ou ir cultivar.`;
+    }
+
+    function updateInventoryDisplay() {
+      const count = inventorySeeds.length;
+      const names = inventorySeeds.map(s => s.seedIcon).join(' ');
+      document.getElementById('inventoryDisplay').innerText = `Sementes no Inventário (${count}): ${names || 'Nenhuma'}`;
+    }
+
+    function startWaterDecay() {
+      if (waterDecayInterval) clearInterval(waterDecayInterval);
+      
+      waterDecayInterval = setInterval(() => {
+        plots.forEach((p, idx) => {
+          if (p.stage > 0 && p.water > 0 && p.stage < 4) {
+            p.water = Math.max(0, p.water - 3); // Reduz água gradualmente
+            updateWaterMeterUI(idx);
+          }
+        });
+      }, 1000);
+    }
+
+    function updateWaterMeterUI(index) {
+      const p = plots[index];
+      const bar = document.getElementById(`waterBar${index}`);
+      const text = document.getElementById(`waterText${index}`);
+      const badge = document.getElementById(`badge${index}`);
+
+      bar.style.width = `${p.water}%`;
+      text.innerText = `💧 ${p.water}%`;
+
+      // Cor da barra de acordo com o nível de umidade
+      if (p.water > 60) {
+        bar.style.backgroundColor = '#3b82f6'; // Azul - Ótimo
+      } else if (p.water > 25) {
+        bar.style.backgroundColor = '#eab308'; // Amarelo - Secando
+      } else {
+        bar.style.backgroundColor = '#ef4444'; // Vermelho - Crítico
+      }
+
+      // Status Badge
+      if (p.stage === 0) {
+        badge.innerText = 'Vazio';
+      } else if (p.stage === 4) {
+        badge.innerText = '🏆 Gigante!';
+      } else if (p.water < 30) {
+        badge.innerText = '⚠️ Com Sede!';
+      } else {
+        badge.innerText = '🌱 Saudável';
+      }
+    }
+
+    function goToFarm() {
+      if (inventorySeeds.length === 0) {
+        document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Compre ao menos uma semente antes de ir para a horta!";
+        return;
+      }
+      document.getElementById('shopScreen').style.display = 'none';
+      document.getElementById('farmScreen').style.display = 'block';
+      document.getElementById('hotbar').style.display = 'flex';
+      document.getElementById('gameStage').innerText = 'CULTIVO';
+      document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Use o regador para encher o medidor de água das plantas!";
+
+      plots.forEach((_, idx) => updateWaterMeterUI(idx));
+      startWaterDecay();
+    }
+
+    function selectTool(tool) {
+      selectedTool = tool;
+      document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+      document.getElementById(`slot-${tool}`).classList.add('active');
+
+      if(tool === 'seed') {
+        document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Semente selecionada! Clique na cova para plantar.";
+      } else if(tool === 'water') {
+        document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Regador selecionado! Clique na cova para encher a barra de água (🪙 20).";
+      } else if(tool === 'fertilizer') {
+        document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Adubo selecionado! A planta precisa de +50% de água para aceitar (🪙 40).";
+      } else if(tool === 'sun') {
+        document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Sol selecionado! Clique para fazer a planta crescer gigante (🪙 60).";
+      }
+    }
+
+    function interactPlot(index) {
+      if (!selectedTool) {
+        document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Primeiro selecione uma ferramenta na barra de ferramentas abaixo!";
+        return;
+      }
+
+      let p = plots[index];
+      let plantEl = document.getElementById(`plant${index}`);
+
+      if (selectedTool === 'seed') {
+        if (p.stage !== 0) {
+          document.getElementById('dialogBox').innerText = `🦫 [Kapi]: Essa cova já tem uma planta!`;
+          return;
+        }
+        if (inventorySeeds.length === 0) {
+          document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Você não tem mais sementes no inventário!";
+          return;
+        }
+        p.plant = inventorySeeds.pop();
+        p.stage = 1;
+        p.water = 40; // Inicial com um pouco de água
+        plantEl.innerText = p.plant.stages[0];
+        updateInventoryDisplay();
+        updateWaterMeterUI(index);
+        document.getElementById('dialogBox').innerText = `🦫 [Kapi]: Plantou ${p.plant.name}! Agora use o regador!`;
+      } 
+      else if (selectedTool === 'water') {
+        if (p.stage === 0) {
+          document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Planta uma semente antes de regar!";
+          return;
+        }
+        if (coins < 20) {
+          document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Moedas insuficientes (precisa de 🪙 20)!";
+          return;
+        }
+        coins -= 20;
+        p.water = Math.min(100, p.water + 45); // Aumenta o medidor de água
+        if (p.stage === 1) p.stage = 2; // Avança para muda regada
+        plantEl.innerText = p.plant.stages[1];
+        document.getElementById('coins').innerText = coins;
+        updateWaterMeterUI(index);
+        document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Regou! A barra de água subiu 💧";
+      } 
+      else if (selectedTool === 'fertilizer') {
+        if (p.stage < 2) {
+          document.getElementById('dialogBox').innerText = "🦫 [Kapi]: A planta precisa ser regada primeiro!";
+          return;
+        }
+        if (p.water < 40) {
+          document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Água muito baixa! Rege a planta antes de adubar!";
+          return;
+        }
+        if (coins < 40) {
+          document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Moedas insuficientes (precisa de 🪙 40)!";
+          return;
+        }
+        coins -= 40;
+        p.stage = 3;
+        plantEl.innerText = p.plant.stages[2];
+        document.getElementById('coins').innerText = coins;
+        updateWaterMeterUI(index);
+        document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Adubado com sucesso! Agora falta a luz do sol!";
+      } 
+      else if (selectedTool === 'sun') {
+        if (p.stage !== 3) {
+          document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Adube a planta primeiro para ela receber sol!";
+          return;
+        }
+        if (p.water < 30) {
+          document.getElementById('dialogBox').innerText = "🦫 [Kapi]: A planta está muito seca para tomar sol! Rege ela!";
+          return;
+        }
+        if (coins < 60) {
+          document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Moedas insuficientes (precisa de 🪙 60)!";
+          return;
+        }
+        coins -= 60;
+        p.stage = 4;
+        plantEl.classList.add('giant');
+        document.getElementById('coins').innerText = coins;
+        updateWaterMeterUI(index);
+        document.getElementById('dialogBox').innerText = `🏆 🦫 [Kapi]: Incrível! A planta cresceu GIGANTE!`;
+
+        plantsFinishedCount++;
+        
+        setTimeout(() => {
+          if (plantsFinishedCount >= 1) { 
+            showEndScreen();
+          }
+        }, 1200);
+      }
+    }
+
+    function showEndScreen() {
+      if (waterDecayInterval) clearInterval(waterDecayInterval);
+      document.getElementById('farmScreen').style.display = 'none';
+      document.getElementById('hotbar').style.display = 'none';
+      document.getElementById('endScreen').style.display = 'flex';
+      document.getElementById('gameStage').innerText = 'FIM';
+      document.getElementById('finalCoins').innerText = coins;
+      document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Parabéns! Você cuidou perfeitamente da água e da horta!";
+    }
+
+    function restartGame() {
+      if (waterDecayInterval) clearInterval(waterDecayInterval);
+      coins = 0;
+      currentQuestion = 0;
+      selectedTool = null;
+      plantsFinishedCount = 0;
+      inventorySeeds = [];
+      plots = [
+        { plant: null, stage: 0, water: 0 },
+        { plant: null, stage: 0, water: 0 },
+        { plant: null, stage: 0, water: 0 }
+      ];
+
+      document.getElementById('coins').innerText = 0;
+      for(let i = 0; i < 3; i++) {
+        let pEl = document.getElementById(`plant${i}`);
+        pEl.innerText = '';
+        pEl.classList.remove('giant');
+        updateWaterMeterUI(i);
+      }
+
+      document.getElementById('endScreen').style.display = 'none';
+      document.getElementById('quizScreen').style.display = 'block';
+      document.getElementById('gameStage').innerText = 'QUIZ';
+      document.getElementById('dialogBox').innerText = "🦫 [Kapi]: Vamos jogar de novo! Responda às perguntas!";
+      
+      loadQuestion();
+    }
+
+    // Inicialização direta do Quiz
+    loadQuestion();
+  </script>
+</body>
+</html>
